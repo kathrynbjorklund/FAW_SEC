@@ -1,0 +1,45 @@
+#Packages
+library(quanteda)
+library(quanteda.textplots)
+library(quanteda.textstats)
+library(tidyverse)
+library(hunspell)
+library(tidytext)
+library(topicmodels)
+library(stm)
+library(qdapDictionaries)
+library(tm)
+library(ggplot2)
+library(furrr)
+
+#Read in csv with articles and metadata
+articletexts <- read_csv("CombinedAll.csv")
+summary(articletexts)
+
+#Read in document containing my own stopwords
+#Document includes some of the most common words based on domain knowledge
+#Document also includes country names, city names and ISO codes from the following source: https://simplemaps.com/data/world-cities
+stopwords <- read.csv("stopwords.csv", header = FALSE)
+stopwords <- stopwords$V1
+stopwords = na.omit(stopwords)
+summary(stopwords)
+
+#Create a corpus
+corp = corpus(articletexts, text_field = 'article')
+corp
+
+#Data processing
+#Tokenization + removal of punctuation, numbers, symbols + normalization + removal of stopwords + stemming
+tokens <- tokens(corp, remove_punct = T, remove_numbers = T, remove_symbols = T) %>%
+  tokens_tolower() %>%
+ tokens_remove(pattern = c(stopwords('en'), stopwords)) %>%
+  tokens_wordstem() 
+
+#Create dfm
+dfm <- dfm(tokens, verbose = TRUE, remove_padding = TRUE)
+
+#Trim least common words
+dfm <- dfm_trim(dfm, min_termfreq = 2)
+
+#Reference
+#https://github.com/ccs-amsterdam/r-course-material/blob/master/tutorials/R_text_3_quanteda.md#preprocessingcleaning-dtms
