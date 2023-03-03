@@ -1,16 +1,7 @@
 #Packages
-library(quanteda)
-library(quanteda.textplots)
-library(quanteda.textstats)
 library(tidyverse)
-library(hunspell)
-library(tidytext)
-library(topicmodels)
-library(stm)
-library(qdapDictionaries)
 library(tm)
-library(ggplot2)
-library(furrr)
+library(quanteda)
 
 #Read in csv with articles and metadata
 articletexts <- read_csv("CombinedAll.csv")
