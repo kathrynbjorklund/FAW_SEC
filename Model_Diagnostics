@@ -1,0 +1,46 @@
+#Packages
+library(tidyverse)
+library(tidytext)
+library(quanteda)
+library(stm)
+library(furrr)
+
+#Prep for diagnostics
+plan(multisession)
+#Run plan(sequential) between iterations
+
+heldout <- make.heldout(dfm, seed=1234)
+
+many_models <- tibble(K = seq.int(from = 25, to = 65, by=1)) %>%
+  mutate(topic_model = future_map(K, ~stm(documents = heldout$documents, vocab = heldout$vocab,
+                                          K = .,
+                                          verbose = FALSE, seed = 1234)))
+
+k_result <- many_models %>%
+  mutate(exclusivity = map(topic_model, exclusivity),
+         semantic_coherence = map(topic_model, semanticCoherence, heldout$documents),
+         eval_heldout = map(topic_model, eval.heldout, heldout$missing),
+         residual = map(topic_model, checkResiduals, heldout$documents),
+         bound =  map_dbl(topic_model, function(x) max(x$convergence$bound)),
+         lfact = map_dbl(topic_model, function(x) lfactorial(x$settings$dim$K)),
+         lbound = bound + lfact,
+         iterations = map_dbl(topic_model, function(x) length(x$convergence$bound)))
+
+k_result
+
+#Plot
+k_result %>%
+  transmute(K,
+            `Lower bound` = lbound,
+            Residuals = map_dbl(residual, "dispersion"),
+            `Semantic coherence` = map_dbl(semantic_coherence, mean),
+            `Held-out likelihood` = map_dbl(eval_heldout, "expected.heldout")) %>%
+  gather(Metric, Value, -K) %>%
+  ggplot(aes(K, Value, color = Metric)) +
+  geom_line(size = 1.5, alpha = 0.7, show.legend = FALSE) +
+  facet_wrap(~Metric, scales = "free_y") +
+  labs(x = "K (number of topics)",
+       y = NULL)
+
+#Reference
+#https://juliasilge.com/blog/evaluating-stm/
