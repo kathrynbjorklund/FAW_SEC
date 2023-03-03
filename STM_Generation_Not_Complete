@@ -1,0 +1,2 @@
+
+m = stm(dfm, K = 33, max.em.its = 75)
