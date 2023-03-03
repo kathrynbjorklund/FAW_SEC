@@ -1,0 +1,67 @@
+library(ggplot2)
+library(dplyr)
+library(ggalt)
+library(cowplot)
+library(tibble)
+library(lubridate)
+library(readxl)
+
+#Create data to plot
+data <- tribble( ~start_date, ~event, ~displ,
+                 ymd(20160101), "NGA, BEN, TGO", 0.2,
+                 ymd(20160401), "STP, GAB", 0.1,
+                 ymd(20170401), "COD, SWZ, GHA, KEN, MOZ, ZAF, ZMB, ZWE", 0.6,
+                 ymd(20170701), "MLI", 0.52,
+                 ymd(20170801), "AGO, BWA, BFA, BDI, CMR, TCD, ETH, GIN, MWI, NAM, NER, COG, RWA, SSD, TZA, UGA", 0.45,
+                 ymd(20171101), "GMB, CIV", 0.38,
+                 ymd(20171201), "CPV, CAF, GNB, MDG, SEN, SYC, SLE, SOM, SDN", 0.3,
+                 ymd(20180201), "LBR", 0.22,
+                 ymd(20180701), "ERI", 0.05,
+                 ymd(20181201), "IND, THA", 0.22,
+                 ymd(20190301), "MUS", 0.16,
+                 ymd(20190501), "NPL", 0.1,
+                 ymd(20190601), "TWN", 0.05,
+                 ymd(20191101), "EGY, YEM, BGD, KHM, CHN, IDN, JPN, LAO, MYS, MMR, PHL, KOR, LKA, VNM, PAK, BRN", 0.35,
+                 ymd(20200101), "NCL", 0.3,
+                 ymd(20200501), "AUS, MRT, TLS, ARE", 0.28,
+                 ymd(20200601), "ISR", 0.2,
+                 ymd(20201201), "JOR, SYR, PNG", 0.18,
+                 ymd(20210401), "IC", 0.1,
+                 ymd(20210901), "SLB", 0.1,
+                 ymd(20211201), "NFK, TAS", 0.2, 
+                 ymd(20220301), "NZL", 0.1,)
+
+#Function to shift x-axis to 0
+shift_axis <- function(p, xmin, xmax, y=0){
+  g <- ggplotGrob(p)
+  dummy <- data.frame(y=y)
+  ax <- g[["grobs"]][g$layout$name == "axis-b"][[1]]
+  p + annotation_custom(grid::grobTree(ax, vp = grid::viewport(y=1, height=sum(ax$height))), 
+                        ymax=y, ymin=y) +
+    annotate("segment", y = 0, yend = 0, x = xmin, xend = xmax, 
+             arrow = arrow(length = unit(0.1, "inches"))) + theme_void()
+}
+#Conditionally set whether text will be above or below the point
+vjust = ifelse(data$displ > 0, -1, 1.5)
+
+p1 <- data %>% 
+  ggplot(aes(start_date, displ)) +
+  geom_lollipop(point.size = 1) +
+  geom_text(aes(x = start_date, y = displ, label = event), data = data,
+            hjust = 0, vjust = vjust, size = 2.5) +
+  theme(axis.title = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.line = element_blank(),
+        axis.text.x = element_text(size = 8)) +
+  expand_limits(x = c(ymd(20151201), ymd(20220501)), y = 1.2) +
+  scale_x_date(breaks = scales::pretty_breaks(n = 9))
+
+#Run the function from above
+timeline <- shift_axis(p1, ymd(20151201), ymd(20220501))
+
+#Plot 
+plot(timeline)
+
+#Reference
+#https://stackoverflow.com/questions/7492274/draw-a-chronological-timeline-with-ggplot2
