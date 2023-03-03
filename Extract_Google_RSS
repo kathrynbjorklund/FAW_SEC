@@ -1,14 +1,14 @@
 library(tidyRSS) 
 
-# I will search for the keyword fallarmwyworm 
-#https://stackoverflow.com/questions/65520315/scraping-google-news-with-rvest-for-keywords?fbclid=IwAR3i_9ur6z1mps9edqwQRbTavo2Qctl8SzfM2T2ZPaPbuIVIrzhEZ6BwBSY 
-
-keyword <- "https://news.google.com/rss/search?q=fall-armyworm-moth+after:2016-01-29+before:2022-11-29&ceid=US:en&hl=en&gl=US" 
+# I will search for the keyword fall armwyworm moth
+keyword <- "https://news.google.com/rss/search?q=fall-armyworm-moth+after:2016-01-01+before:2022-11-29&ceid=US:en&hl=en&gl=US" 
 
 # From the package vignette 
-
 google_news <- tidyfeed(keyword, clean_tags = TRUE, parse_dates = TRUE) 
 
 df <- apply(google_news,2,as.character) 
 
 write.csv(df,"~/Desktop/moth2_en.csv", row.names = FALSE) 
+
+# Reference
+#https://stackoverflow.com/questions/65520315/scraping-google-news-with-rvest-for-keywords?fbclid=IwAR3i_9ur6z1mps9edqwQRbTavo2Qctl8SzfM2T2ZPaPbuIVIrzhEZ6BwBSY 
