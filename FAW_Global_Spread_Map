@@ -1,14 +1,18 @@
+#Package
 library(ggplot2)
 
+#Load in data
 data <- read.csv("WorldMapFAW.csv", header=T)
 
+#Get world map data
 mapdata <- map_data("world")
 
+#Join world map data with FAW global spread data
 mapdata <- left_join(mapdata, data, by="region")
 
+#Plot map
 map1 <- ggplot(mapdata, aes (x = long, y = lat, group=group)) + 
-  geom_polygon(aes(fill=Year), color = "black") 
-map1
+  geom_polygon(aes(fill=Year), color = "black")
 
 map2 <- map1 + theme(axis.text.x = element_blank(),
                      axis.text.y = element_blank(),
@@ -18,3 +22,6 @@ map2 <- map1 + theme(axis.text.x = element_blank(),
                      rect = element_blank()) + 
   scale_fill_gradient(name = "Year FAW Emerged", low = "yellow", high = "blue", na.value = "grey80")
 map2
+
+#Reference
+#"R tutorial: Creating Maps and mapping data with ggplot2." YouTube, uploaded by Statistics Guides with Dr Paul Christiansen, 16 March 2021, https://www.youtube.com/watch?v=AgWgPSZ7Gp0.
