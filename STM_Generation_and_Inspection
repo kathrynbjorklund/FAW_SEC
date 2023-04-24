@@ -1,0 +1,66 @@
+#Packages (NEED TO CHECK WHICH PACKAGES ARE ACTUALLY IN USE)
+library(quanteda)
+library(quanteda.textplots)
+library(quanteda.textstats)
+library(tidyverse)
+library(hunspell)
+library(tidytext)
+library(topicmodels)
+library(stm)
+library(qdapDictionaries)
+library(tm)
+library(ggplot2)
+library(furrr)
+
+#STM
+m <- stm(dfm, K = 33, emtol = 0.0000001, max.em.its = 1000, control = list("allow.neg.change" = FALSE))
+
+#STM info
+#High Prob and FREX words
+labelTopics(m)
+
+#Expected topic proportions
+plot.STM(m)
+
+#Topics in documents
+findThoughts(
+  m,
+  texts = texts(corp),
+  topics = 33,
+  n = 5)
+  
+#Year Since Introduction as Prevalence Covariate
+m = stm(dfm, K = 33, emtol = 0.0000001, prevalence =~ publication_date_minus_country_entry_date, max.em.its = 1000, control = list("allow.neg.change" = FALSE))
+
+prep <- estimateEffect(1:33 ~ publication_date_minus_country_entry_date, stmobj = m, meta = docvars(dfm))
+summary(prep, topics=1:33)
+
+#Plot Year Since Introduction as Prevalence Covariate Using Spline Function 
+splines = cbind(data.frame(year=2016:2022), s(2016:2022, 3))
+splines = reshape2::melt(splines, id.var="year")
+ggplot(splines, aes(x=year, y=value, color=variable, group=variable)) + geom_line()
+
+m = stm(dfm, K = 33, prevalence =~ s(publication_date_minus_country_entry_date, 3), max.em.its = 75)
+prep <- estimateEffect(1:33 ~ s(publication_date_minus_country_entry_date, 3), stmobj = m, meta = docvars(dfm))
+
+#Figure 3
+plot(prep, "publication_date_minus_country_entry_date", method = "continuous", topics = c(1,6,27), model = m, labeltype = "custom", custom.labels = c("Spread of FAW", "Drought/Weather Patterns & FAW", "Invasive Pest Species"))
+
+#Figure 4
+plot(prep, "publication_date_minus_country_entry_date", method = "continuous", topics = c(16,30), model = m, labeltype = "custom", custom.labels = c("Biosecurity", "Insect Monitoring"))
+
+#Figure 5
+plot(prep, "publication_date_minus_country_entry_date", method = "continuous", topics = c(4,5,19), model = m, labeltype = "custom", custom.labels = c("Crop Losses", "Domestic Agriculture", "Food Insecurity"))
+
+#Figure 6
+plot(prep, "publication_date_minus_country_entry_date", method = "continuous", topics = c(8,25), model = m, labeltype = "custom", custom.labels = c("Agriculture Empowerment Programs", "Local Government Involvement"))
+
+#Figure 7
+plot(prep, "publication_date_minus_country_entry_date", method = "continuous", topics = c(12,18,22,31), model = m, labeltype = "custom", custom.labels = c("Biological Pest Control Research", "Natural Enemies", "Transgenic Crops/GMOs", "Seed Treatments"))
+
+#Figure 8
+plot(prep, "publication_date_minus_country_entry_date", method = "continuous", topics = c(23,29), model = m, labeltype = "custom", custom.labels = c("Technology", "Research & Development/Innovation"))
+
+#References (HOW DO I REFERENCE STEFAN?)
+#https://github.com/ccs-amsterdam/r-course-material/blob/master/tutorials/r_text_stm.md#spline-function
+#Stefan Daume 
