@@ -1,0 +1,33 @@
+#Install Package
+library(forcats)
+
+#Reorder Themes
+long_theme_proportions$Theme <- forcats::fct_relevel(long_theme_proportions$Theme, 
+                                                     "Invasive Pests in Changing Climates", 
+                                                     "FAW Prevention & Surveillance", 
+                                                     "Agricultural Impacts", 
+                                                     "Government Support & Initiatives for Agricultural Development", 
+                                                     "Socioeconomic Consequences", 
+                                                     "Advancements in Agricultural Technology", 
+                                                     "Pest Control Methods")
+
+#Plot
+continent_plot <- ggplot(long_theme_proportions, 
+                            aes(x = continent, 
+                                y = Proportion, 
+                                fill = Theme)) +  
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ Theme, scales = "fixed", ncol = 2) +
+  labs(x = "",
+       y = "Theme Proportion",
+       title = "Theme Prevalence by Continent") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14), 
+        axis.title.y = element_text(face = "bold", size = 12), 
+        axis.text.y = element_text(face = "bold", size = 10), 
+        axis.text.x = element_text(face = "bold", size = 10), 
+        legend.position = "none",
+        strip.text = element_text(face = "bold", size = 12),  
+        panel.spacing = unit(2, "lines")) +  # increase the spacing between panels
+  scale_fill_manual(values = c("#D32F2F", "#F57C00", "#FBC02D", "#689F38","#0288D1", "#7B1FA2","#C2185B"))  
+print(continent_plot)
