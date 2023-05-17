@@ -1,0 +1,80 @@
+#Theme Proportions Over Time by Continent
+library(stminsights) 
+
+#Get Document Topic Probabilities
+theta_matrix <- m$theta 
+theta_df <- as.data.frame(theta_matrix)
+theta_df$doc_id <- 1:nrow(theta_df)
+
+topic_proportions <- left_join(articletexts, theta_df, by = "doc_id")
+
+#Group By Continent
+topic_proportions_summary <- topic_proportions %>%
+  group_by(continent) %>%
+  summarize(across(starts_with("V"), \(x) mean(x, na.rm = TRUE)))
+
+#Calculate Mean Topic Proportions
+long_topic_proportions <- topic_proportions_summary %>%
+  pivot_longer(cols = starts_with("V"),
+               names_to = "V",
+               values_to = "Proportion")
+
+#Sum Mean Topic Proportions
+long_topic_proportions <- long_topic_proportions %>%
+  group_by(continent, V) %>%
+  mutate(CumulativeProportion = cumsum(Proportion) / sum(Proportion))
+
+topic_names <- c("V1"="Topic 1", "V2"= "Topic 2", "V3" = "Topic 3",
+                 "V4"="Topic 4", "V5"="Topic 5", "V6"="Topic 6", 
+                 "V7"="Topic 7", "V8"="Topic 8", "V9"="Topic 9",
+                 "V10"="Topic 10", "V11"="Topic 11", "V12"="Topic 12",
+                 "V13"="Topic 13", "V14"="Topic 14", "V15"="Topic 15",
+                 "V16"="Topic 16", "V17"="Topic 17", "V18"="Topic 18", 
+                 "V19"="Topic 19", "V20"="Topic 20", "V21"="Topic 21", 
+                 "V22"="Topic 22", "V23"="Topic 23", "V24"="Topic 24", "V25"="Topic 25",
+                 "V26"="Topic 26", "V27"="Topic 27", "V28"="Topic 28", 
+                 "V29"="Topic 29", "V30"="Topic 30", "V31"="Topic 31", 
+                 "V32"="Topic 32", "V33"="Topic 33")
+
+long_topic_proportions$V <- topic_names[long_topic_proportions$V]
+
+#Group Topics into Themes
+theme_mapping <- c("Topic 1" = "Invasive Pests in Changing Climates",
+                   "Topic 6" = "Invasive Pests in Changing Climates",
+                   "Topic 27" = "Invasive Pests in Changing Climates",
+                   "Topic 3" = "Invasive Pests in Changing Climates",
+                   "Topic 7" = "Invasive Pests in Changing Climates",
+                   "Topic 9" = "Invasive Pests in Changing Climates",
+                   "Topic 16" = "FAW Prevention & Surveillance",
+                   "Topic 30" = "FAW Prevention & Surveillance",
+                   "Topic 4" = "Agricultural Impacts", 
+                   "Topic 5" = "Agricultural Impacts", 
+                   "Topic 19" = "Agricultural Impacts", 
+                   "Topic 11" = "Agricultural Impacts", 
+                   "Topic 15" = "Agricultural Impacts", 
+                   "Topic 20" = "Agricultural Impacts", 
+                   "Topic 21" = "Socioeconomic Consequences", 
+                   "Topic 33" = "Socioeconomic Consequences", 
+                   "Topic 8" = "Government Support & Initiatives for Agricultural Development", 
+                   "Topic 25" = "Government Support & Initiatives for Agricultural Development",
+                   "Topic 2" = "Government Support & Initiatives for Agricultural Development",
+                   "Topic 24" = "Government Support & Initiatives for Agricultural Development",
+                   "Topic 28" = "Government Support & Initiatives for Agricultural Development",
+                   "Topic 32" = "Government Support & Initiatives for Agricultural Development",
+                   "Topic 12" = "Pest Control Methods",
+                   "Topic 18" = "Pest Control Methods",
+                   "Topic 22" = "Pest Control Methods",
+                   "Topic 31" = "Pest Control Methods",
+                   "Topic 13" = "Pest Control Methods",
+                   "Topic 14" = "Pest Control Methods",
+                   "Topic 17" = "Pest Control Methods",
+                   "Topic 26" = "Pest Control Methods",
+                   "Topic 23" = "Advancements in Agricultural Technology",
+                   "Topic 29" = "Advancements in Agricultural Technology",
+                   "Topic 10" = "Advancements in Agricultural Technology")
+
+long_topic_proportions$Theme <- theme_mapping[long_topic_proportions$V]
+
+long_theme_proportions <- long_topic_proportions %>%
+  group_by(Theme, continent) %>%
+  summarize(Proportion = sum(Proportion), .groups = "drop")
