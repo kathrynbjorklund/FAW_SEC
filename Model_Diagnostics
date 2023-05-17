@@ -43,4 +43,5 @@ k_result %>%
        y = NULL)
 
 #Reference
-#https://juliasilge.com/blog/evaluating-stm/
+#Silge, Julia. "Training, evaluating, and interpreting topic models." juliasilge.com, September 8, 2018, https://juliasilge.com/blog/evaluating-stm/.
+#S. Daume, personal communication, February 9, 2023
