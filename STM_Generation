@@ -25,5 +25,5 @@ findThoughts(
 m = stm(dfm, K = 33, emtol = 0.0000001, prevalence =~ publication_date_minus_country_entry_date, max.em.its = 1000, control = list("allow.neg.change" = FALSE))
 
 #References
-#vanatteveldt, Structural Topic Modeling, (2019), GitHub Repository, https://github.com/ccs-amsterdam/r-course-material/blob/master/tutorials/r_text_stm.md#spline-function
+#W. V. Atteveldt, Structural Topic Modeling, (2019), GitHub Repository, https://github.com/ccs-amsterdam/r-course-material/blob/master/tutorials/r_text_stm.md#spline-function
 #S. Daume, personal communication, February 9, 2023
