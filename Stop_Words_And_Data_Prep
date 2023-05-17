@@ -9,7 +9,7 @@ summary(articletexts)
 
 #Read in document containing my own stopwords
 #Document includes some of the most common words based on domain knowledge
-#Document also includes country names, city names and ISO codes from the following source: https://simplemaps.com/data/world-cities
+#Document also includes country names, city names and ISO codes from the following source: "World Cities Database." SimpleMaps, https://simplemaps.com/data/world-cities. 
 stopwords <- read.csv("stopwords.csv", header = FALSE)
 stopwords <- stopwords$V1
 stopwords = na.omit(stopwords)
