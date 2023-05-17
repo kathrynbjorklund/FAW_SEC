@@ -12,4 +12,4 @@ df <- apply(google_news,2,as.character)
 write.csv(df,"~/Desktop/moth2_en.csv", row.names = FALSE) 
 
 #Reference
-#https://stackoverflow.com/questions/65520315/scraping-google-news-with-rvest-for-keywords?fbclid=IwAR3i_9ur6z1mps9edqwQRbTavo2Qctl8SzfM2T2ZPaPbuIVIrzhEZ6BwBSY 
+#"Scraping Google News with rvest for Keywords." Stack Overflow, 7 Jan. 2021, stackoverflow.com/questions/65520315/scraping-google-news-with-rvest-for-keywords.
