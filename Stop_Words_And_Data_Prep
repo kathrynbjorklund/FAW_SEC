@@ -33,4 +33,4 @@ dfm <- dfm(tokens, verbose = TRUE, remove_padding = TRUE)
 dfm <- dfm_trim(dfm, min_termfreq = 2)
 
 #Reference
-#https://github.com/ccs-amsterdam/r-course-material/blob/master/tutorials/R_text_3_quanteda.md#preprocessingcleaning-dtms
+#K. Welbers, R text analysis: quanteda, (2022), GitHub Repository, https://github.com/ccs-amsterdam/r-course-material/blob/master/tutorials/R_text_3_quanteda.md#preprocessingcleaning-dtms
