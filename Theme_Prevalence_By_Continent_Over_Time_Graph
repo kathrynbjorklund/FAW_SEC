@@ -1,0 +1,31 @@
+#Install Package
+library(forcats)
+
+#Reorder Themes
+long_theme_proportions$Theme <- forcats::fct_relevel(long_theme_proportions$Theme, 
+                                                     "Invasive Pests in Changing Climates", "FAW Prevention & Surveillance", "Agricultural Impacts", "Government Support & Initiatives for Agricultural Development", "Socioeconomic Consequences", "Advancements in Agricultural Technology", "Pest Control Methods")
+
+#Plot
+continent_over_time_plot <- ggplot(long_theme_proportions, 
+                            aes(x = publication_date_minus_country_entry_date, 
+                                y = Proportion, 
+                                color = continent, 
+                                group = interaction(Theme, continent))) +
+  stat_smooth(method = "loess", 
+              se = FALSE, 
+              geom = "line", 
+              alpha = 0.5,
+              size = 1.0) +
+  facet_wrap(~ Theme, scales = "fixed", ncol = 2) + 
+  labs(x = "Year",
+       y = "Theme Proportion",
+       title = "Theme Prevalence Over Time by Continent") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 14), 
+        axis.title = element_text(size = 12), 
+        axis.text = element_text(size = 10), 
+        legend.position = "bottom",
+        legend.text = element_text(size = 10), 
+        strip.text = element_text(size = 12)) +  
+  scale_color_discrete(name = "Continent")
+print(continent_over_time_plot)
